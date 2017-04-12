@@ -10,7 +10,8 @@
             <input type="submit" value="Log out" />
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
-        </security:authorize>  
+      </security:authorize>
+      
         <h2>All Post</h2>
 
         <security:authorize access="hasRole('ADMIN')">    
