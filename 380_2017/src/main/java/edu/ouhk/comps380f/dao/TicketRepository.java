@@ -11,6 +11,6 @@ public interface TicketRepository {
     public List<Ticket> findByCategories(String type);
     public void deleteById(int id);
     public void update(Ticket ticket);
-    public int checkempty();
+
 }
 

@@ -1,6 +1,5 @@
 package edu.ouhk.comps380f.dao;
 
-import edu.ouhk.comps380f.model.EmptyTicket;
 import edu.ouhk.comps380f.model.Ticket;
 import edu.ouhk.comps380f.model.TicketUser;
 import java.sql.ResultSet;
@@ -42,15 +41,6 @@ public class TicketRepositoryImpl implements TicketRepository {
         }
     }
     
-       private static final class EmptyTicketRowMapper implements RowMapper<EmptyTicket> {
-
-        @Override
-        public EmptyTicket mapRow(ResultSet rs, int i) throws SQLException {
-            EmptyTicket ticket = new EmptyTicket();
-            ticket.setEmpty(rs.getInt("empty"));
-            return ticket;
-        }
-    }
 
 //    private static final String SQL_INSERT_TICKET
 //            = "insert into ticket (id,customername,subject,body,categories) values (1,'p','f','d','lab')";
@@ -115,19 +105,6 @@ public class TicketRepositoryImpl implements TicketRepository {
       }catch(EmptyResultDataAccessException e) {
           return null;
       }
-    }
-    
-    private static final String SQL_EMPTY
-            = "select count(id) as empty from ticket";
-
-    @Override
-    public int checkempty() {
-        EmptyTicket total = jdbcOp.queryForObject(SQL_EMPTY, new EmptyTicketRowMapper());
-        int emptytable=total.getEmpty();
-        if (emptytable!=0)
-            return 1;
-        else
-            return 0;
     }
     
     private static final String SQL_SELECT_MAX

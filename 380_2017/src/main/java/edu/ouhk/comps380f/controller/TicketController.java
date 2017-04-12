@@ -147,10 +147,10 @@ Ticket ticket = new Ticket();
         if (ticket.getSubject() == null || ticket.getSubject().length() <= 0
                 || ticket.getBody() == null || ticket.getBody().length() <= 0
                 || ticket.getCategories() == null || ticket.getCategories().length() <= 0) {
-            if(ticketRepo.checkempty()!=0){
-                ticket.setId(ticketRepo.maxId()+1);
+            if(ticketRepo.findAll().isEmpty()){
+              ticket.setId(0);
             }else{
-                ticket.setId(0);
+                ticket.setId(ticketRepo.maxId()+1);
             }
             ticket.setCustomerName(principal.getName());
             ticket.setSubject(form.getSubject());
