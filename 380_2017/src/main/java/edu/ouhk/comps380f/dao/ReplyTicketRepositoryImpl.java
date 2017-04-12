@@ -120,7 +120,7 @@ public class ReplyTicketRepositoryImpl implements ReplyTicketRepository {
     
     
     private static final String SQL_SELECT_MAX
-            = "select * from ticket where id = (select MAX(id) from ticket)";
+            = "select * from reply where id = (select MAX(id) from reply)";
     @Override
     public int maxId() {
         ReplyTicket idobject = jdbcOp.queryForObject(SQL_SELECT_MAX, new ReplyTicketRowMapper());

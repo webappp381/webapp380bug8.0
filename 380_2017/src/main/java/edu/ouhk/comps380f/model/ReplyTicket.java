@@ -6,34 +6,35 @@ import java.util.Map;
 
 public class ReplyTicket {
 
-    private long id;
-    private long refTicketid;
+    private int id;
+    private int refTicketid;
     private String replyName;
-
-  public String getReplyName() {
-    return replyName;
-  }
-
-  public void setReplyName(String replyName) {
-    this.replyName = replyName;
-  }
     private String replybody;
- 
     private Map<String, Attachment> attachments = new LinkedHashMap<>();
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public long getRefTicketid() {
+    
+
+    public String getReplyName() {
+        return replyName;
+    }
+
+    public void setReplyName(String replyName) {
+        this.replyName = replyName;
+    }
+
+    public int getRefTicketid() {
         return refTicketid;
     }
 
-    public void setRefTicketid(long refTicketid) {
+    public void setRefTicketid(int refTicketid) {
         this.refTicketid = refTicketid;
     }
 

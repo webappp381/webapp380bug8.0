@@ -27,15 +27,31 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     this.jdbcOp = new JdbcTemplate(this.dataSource);
   }
   private static final String SQL_INSERT_ATTACHMENT
-          = "insert into attachment (id,attachmentname,mimecontenttype,contents) values (?,?,?,?)";
+          = "insert into attachment (id,rid,attachmentname,mimecontenttype,contents) values (?,?,?,?,?)";
+  
+  private static final String SQL_INSERT_REPLY_ATTACHMENT
+          = "insert into attachment (id, rid,attachmentname,mimecontenttype,contents) values (?,?,?,?,?)";
 
   @Override
-  public void create(Attachment attach) {
+  public void createTicketAttachment(Attachment attach) {
     jdbcOp.update(SQL_INSERT_ATTACHMENT,
                 attach.getId(),
+                attach.getRid(),
                 attach.getName(),
                 attach.getMimeContentType(),               
                 attach.getContents());
+    System.out.println( "id" + attach.getId() + "Rid" + attach.getRid());
+                
+  }
+  @Override
+  public void createReplyAttachment(Attachment attach) {
+    jdbcOp.update(SQL_INSERT_REPLY_ATTACHMENT,
+                attach.getId(),
+                attach.getRid(),
+                attach.getName(),
+                attach.getMimeContentType(),               
+                attach.getContents());
+    System.out.println( "id" + attach.getId() + "Rid" + attach.getRid());
   }
   
 
@@ -55,14 +71,19 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
   public List<Attachment> findAll() {
       List<Attachment> attachments = new ArrayList<>();
         List<Map<String, Object>> rows = jdbcOp.queryForList(SQL_FIND_ATTACHMENT);
-
-        for (Map<String, Object> row : rows) {
+            
+        for (Map<String, Object> row : rows) {            
             Attachment attachment = new Attachment();
             int id = (int)row.get("id");
+            
+           
+                int rid = (int)row.get("rid");
+                attachment.setRid(rid);
+            
             String attachmentname = (String)row.get("attachmentname");
             String mimeContentType = (String)row.get("mimecontenttype");
             byte[] contents = (byte[])row.get("contents");
-            attachment.setId(id);                  
+            attachment.setId(id);                     
             attachment.setName(attachmentname);
             attachment.setMimeContentType(mimeContentType);
             attachment.setContents(contents);
@@ -70,4 +91,57 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
         }
         return attachments;
   }
+  private static final String SQL_FINDBYNAME_ATTACHMENT
+          = "select * from attachment where attachmentname =?";
+  
+  @Override
+  public Attachment findByName(String name){
+
+        List<Map<String, Object>> rows = jdbcOp.queryForList(SQL_FINDBYNAME_ATTACHMENT,name);
+        Attachment attachment = new Attachment();
+        for (Map<String, Object> row : rows) {
+            
+            int id = (int)row.get("id");
+            int rid = (int)row.get("rid");
+            String attachmentname = (String)row.get("attachmentname");
+            String mimeContentType = (String)row.get("mimecontenttype");
+            byte[] contents = (byte[])row.get("contents");
+            attachment.setId(id);          
+            attachment.setRid(rid);
+            attachment.setName(attachmentname);
+            attachment.setMimeContentType(mimeContentType);
+            attachment.setContents(contents);
+            
+      
+        }
+        return attachment;
+      
+  }
+  private static final String SQL_FINDBYRid_ATTACHMENT
+          = "select * from attachment where Rid =?";
+  
+  @Override
+  public Attachment findByRid(int Rid){
+
+        List<Map<String, Object>> rows = jdbcOp.queryForList(SQL_FINDBYNAME_ATTACHMENT,Rid);
+        Attachment attachment = new Attachment();
+        for (Map<String, Object> row : rows) {
+            
+            int id = (int)row.get("id");
+            int rid = (int)row.get("rid");
+            String attachmentname = (String)row.get("attachmentname");
+            String mimeContentType = (String)row.get("mimecontenttype");
+            byte[] contents = (byte[])row.get("contents");
+            attachment.setId(id);          
+            attachment.setRid(rid);
+            attachment.setName(attachmentname);
+            attachment.setMimeContentType(mimeContentType);
+            attachment.setContents(contents);
+            
+      
+        }
+        return attachment;
+      
+  }
+  
 }

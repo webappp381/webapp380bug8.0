@@ -55,7 +55,35 @@ public class TicketController {
     @RequestMapping(value = "view/{ticketId}", method = RequestMethod.GET)
     public ModelAndView view(@PathVariable("ticketId") int ticketId) {
         Ticket ticket = this.ticketRepo.findById(ticketId);
-
+        List<Attachment> attachmentlist = new ArrayList<Attachment>();
+        
+        for (Attachment a:attachmentRepo.findAll()){
+            if (a.getId()==ticketId && a.getRid()==0){
+                 attachmentlist.add(a);
+            }
+            
+        } 
+        List<ReplyTicket> replylist= new ArrayList<ReplyTicket>();
+                      replylist=replyTicketRepo.findParts(ticketId);
+                      
+        for (Attachment a:attachmentRepo.findAll()){
+           
+                for (int i=0;i<replylist.size();i++){
+                    
+                    if (a.getRid()==replylist.get(i).getId()){
+                        replylist.get(i).addAttachment(a);
+                        //replylist.get(i).getId();     replyid
+                        //a                             attachment
+                        //reply.set(i, element)
+                        
+                    }
+                }
+                    
+                  
+            
+            
+        }
+        
         if (ticket == null) {
             return new ModelAndView(new RedirectView("/ticket/list", true));
         }
@@ -63,7 +91,9 @@ public class TicketController {
         modelAndView.addObject("ticketId", ticketId);
         modelAndView.addObject("ticket", ticket);
         modelAndView.addObject("numberComment", replyTicketRepo.findParts(ticketId).size());
-        modelAndView.addObject("selectedReply", replyTicketRepo.findParts(ticketId));
+        //List<ReplyTicket> re=replyTicketRepo.findParts(ticketId);
+        modelAndView.addObject("selectedReply",replylist);
+        modelAndView.addObject("attachmentlist", attachmentlist);
         return modelAndView;
     }
 
@@ -148,7 +178,7 @@ Ticket ticket = new Ticket();
                 || ticket.getBody() == null || ticket.getBody().length() <= 0
                 || ticket.getCategories() == null || ticket.getCategories().length() <= 0) {
             if(ticketRepo.findAll().isEmpty()){
-              ticket.setId(0);
+              ticket.setId(1);
             }else{
                 ticket.setId(ticketRepo.maxId()+1);
             }
@@ -157,10 +187,11 @@ Ticket ticket = new Ticket();
             ticket.setBody(form.getBody());
             ticket.setCategories(form.getCategories());
             int ticket_id = ticket.getId();
-            for (MultipartFile filePart : form.getAttachments()) {
+              for (MultipartFile filePart : form.getAttachments()) {
                 System.out.println("here:" +filePart);
                 Attachment attachment = new Attachment();
                 attachment.setId(ticket_id);
+                attachment.setRid(0);
                 attachment.setName(filePart.getOriginalFilename());
                  //a.add(filePart.getOriginalFilename());
                 a = attachment.getName();
@@ -171,14 +202,17 @@ Ticket ticket = new Ticket();
                         && attachment.getContents() != null && attachment.getContents().length > 0) {
                     ticket.addAttachment(attachment);
                 }
+                if (!a.equals("")) {
+                    attachmentRepo.createTicketAttachment(ticket.getAttachment(a));
+                }
                 
             }
         }
        // this.ticketDatabase.put(ticket.getId(), ticket);
-        ticketRepo.create(ticket);
+           ticketRepo.create(ticket);
+        
         //attachmentRepo.create(ticket.getAttachment(a));
-        if (!a.equals("")) {
-        attachmentRepo.create(ticket.getAttachment(a));}
+        
         return new RedirectView("/ticket/view/" + ticketRepo.maxId(), true);
     }
 
@@ -194,8 +228,10 @@ Ticket ticket = new Ticket();
     public View download(@PathVariable("ticketId") int ticketId,
             @PathVariable("attachment") String name) {
         Ticket ticket = this.ticketRepo.findById(ticketId);
+        Attachment attachment= attachmentRepo.findByName(name);
+        
         if (ticket != null) {
-            Attachment attachment = ticket.getAttachment(name);
+            
             if (attachment != null) {
                 return new DownloadingView(attachment.getName(),
                         attachment.getMimeContentType(), attachment.getContents());

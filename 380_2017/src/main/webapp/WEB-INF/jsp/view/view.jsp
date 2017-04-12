@@ -26,9 +26,9 @@
         <i>Post by - <c:out value="${ticket.customerName}" /></i><br /><br />
         Categories: <c:out value="${ticket.categories}"/><br /><br />
         <c:out value="${ticket.body}" /><br /><br />
-        <c:if test="${ticket.numberOfAttachments > 0}">
+         <c:if test="${attachmentlist !=null}">
             File(s):
-            <c:forEach items="${ticket.attachments}" var="attachment"
+            <c:forEach items="${attachmentlist}" var="attachment"
                        varStatus="status">
                 <c:if test="${!status.first}">, </c:if>
                 <a href="<c:url value="/ticket/${ticketId}/attachment/${attachment.name}" />">
@@ -43,15 +43,20 @@
             <c:otherwise>
  
                 <c:forEach items="${selectedReply}" var="entry">
-                    Reply Name <c:out value="${entry.replyName}"/>
+                      Reply Name <c:out value="${entry.replyName}"/>
                     <br/>
-                    (reply content: <c:out value="${entry.replybody}" />)
-                  
+                    (reply content: <c:out value="${entry.replybody}" />)                   
+                    <c:forEach items="${entry.attachments}" var="attachment"
+                               varStatus="status">                     
+                        <c:if test="${!status.first}">, </c:if>
+                        <a href="<c:url value="/reply/${entry.id}/attachment/${attachment.name}" />">
+                            <c:out value="${attachment.name}" /></a>       
+                        </c:forEach>
                     <br /><br />
-                     <security:authorize access="hasRole('ADMIN')">            
+                    <security:authorize access="hasRole('ADMIN')">            
                         [<a href="<c:url value="/reply/delete/${entry.id}" />">Delete</a>]
                     </security:authorize>
-                        <br/><br/>
+                    <br/><br/>
                 </c:forEach>
             </c:otherwise>
         </c:choose>

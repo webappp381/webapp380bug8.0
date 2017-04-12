@@ -5,9 +5,7 @@ import edu.ouhk.comps380f.model.Attachment;
 import edu.ouhk.comps380f.model.ReplyTicket;
 import edu.ouhk.comps380f.model.Ticket;
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,9 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.RedirectView;
-import edu.ouhk.comps380f.controller.TicketController;
+import edu.ouhk.comps380f.dao.AttachmentRepository;
 import edu.ouhk.comps380f.dao.ReplyTicketRepository;
 import edu.ouhk.comps380f.dao.TicketRepository;
+import edu.ouhk.comps380f.view.DownloadingView;
 import java.security.Principal;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +31,9 @@ public class ReplyTicketController {
      
     @Autowired
     TicketRepository ticketRepo;
+    
+    @Autowired
+    AttachmentRepository attachmentRepo; 
      
      private volatile long REPLYTICKET_ID_SEQUENCE = 1;
    
@@ -80,22 +82,36 @@ public class ReplyTicketController {
        
         @RequestMapping(value = "{ticketId}", method = RequestMethod.POST)
     public View reply(Principal principal,ReplyForm form,@PathVariable("ticketId") int ticketId) throws IOException {
+        String attachmentname ="";
         ReplyTicket replyTicket = new ReplyTicket();
-        replyTicket.setId((int)this.getNextReplyTicketId());
+        if(!ReplyTicketRepo.findAll().isEmpty()){
+                replyTicket.setId(ReplyTicketRepo.maxId()+1);
+            }else{
+                replyTicket.setId(1);
+            }
+        
         replyTicket.setReplyName(principal.getName());
         replyTicket.setRefTicketid(ticketId);
         replyTicket.setReplybody(form.getReplybody());
-        
+        int reply_id = replyTicket.getId();
+        int referenceTicketId = replyTicket.getRefTicketid();
+        Attachment attachment = new Attachment();
         for (MultipartFile filePart : form.getReplyattachments()) {
-            Attachment attachment = new Attachment();
+            
+            attachment.setRid(reply_id);
+            attachment.setId(referenceTicketId);
             attachment.setName(filePart.getOriginalFilename());
             attachment.setMimeContentType(filePart.getContentType());
             attachment.setContents(filePart.getBytes());
+            attachmentname = attachment.getName();
             if (attachment.getName() != null && attachment.getName().length() > 0
                     && attachment.getContents() != null && attachment.getContents().length > 0) {
                 replyTicket.addAttachment(attachment);
             }
+            if (!attachmentname.equals("")) {
+                attachmentRepo.createReplyAttachment(replyTicket.getAttachment(attachmentname));}
         }
+        System.out.println("ticket id:"+attachment.getId() + "reply_id" + attachment.getRid());
         //TicketController.replyTicketDatabase.put(replyTicket.getId(), replyTicket);
         ReplyTicketRepo.create(replyTicket);
         //Ticket ticket = TicketController.ticketRepo.get(ticketId);
@@ -103,7 +119,26 @@ public class ReplyTicketController {
         //ticket.setReplyId(replyTicket.getId());
         
         //TicketController.ticketRepo.replace(ticketId,ticket);
+        
         return new RedirectView("/ticket/view/" + ticketId, true);
+    }
+    
+     @RequestMapping(
+            value = "/{replyId}/attachment/{attachment:.+}",
+            method = RequestMethod.GET
+    )
+    public View download(@PathVariable("replyId") int replyId,
+            @PathVariable("attachment") String name) {
+        ReplyTicket replyTicket = this.ReplyTicketRepo.findById(replyId);
+        Attachment attachment= attachmentRepo.findByName(name);
+        if (replyTicket != null) {
+            
+            if (attachment != null) {
+                return new DownloadingView(attachment.getName(),
+                        attachment.getMimeContentType(), attachment.getContents());
+            }
+        }
+        return new RedirectView("/ticket/list", true);
     }
     
     private synchronized long getNextReplyTicketId() {
