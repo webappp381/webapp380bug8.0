@@ -4,12 +4,13 @@
         <title>Customer Support</title>
     </head>
     <body>
+      <security:authorize access="isAuthenticated()">
         <c:url var="logoutUrl" value="/logout"/>
         <form action="${logoutUrl}" method="post">
             <input type="submit" value="Log out" />
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
-
+        </security:authorize>  
         <h2>All Post</h2>
 
         <security:authorize access="hasRole('ADMIN')">    
@@ -25,7 +26,9 @@
         <a href="<c:url value="/ticket/listlecture" />">lecture</a>
         <a href="<c:url value="/ticket/listlab" />">lab</a>
         <a href="<c:url value="/ticket/listother" />">other</a>
+        <security:authorize access="isAnonymous()">
         <a href="<c:url value="/login" />">login</a>
+        </security:authorize>  
         <br /><br />
         <c:choose>
             <c:when test="${fn:length(ticketDatabase) == 0}">
