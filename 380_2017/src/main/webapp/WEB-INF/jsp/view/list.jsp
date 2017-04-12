@@ -16,7 +16,9 @@
             <a href="<c:url value="/user" />">Manage User Accounts</a><br /><br />
             
         </security:authorize>
+        <security:authorize access="hasRole('ADMIN')"> 
         <a href="<c:url value="/poll/create" />">Create new poll</a>
+        </security:authorize>
         <a href="<c:url value="/ticket/create" />">New Post</a>  
         <a href="<c:url value="/ticket/listlecture" />">lecture</a>
         <a href="<c:url value="/ticket/listlab" />">lab</a>
@@ -31,9 +33,11 @@
                     Post #${entry.id}:
                     <a href="<c:url value="/ticket/view/${entry.id}" />">
                         <c:out value="${entry.subject}" /></a>
-                    (Post by: <c:out value="${entry.customerName}" />)                    
+                    (Post by: <c:out value="${entry.customerName}" />)            
+                    <security:authorize access="isAuthenticated()">
                     <security:authorize access="hasRole('ADMIN') or principal.username=='${entry.customerName}'">            
                         [<a href="<c:url value="/ticket/edit/${entry.id}" />">Edit</a>]
+                    </security:authorize>
                     </security:authorize>
                     <security:authorize access="hasRole('ADMIN')">            
                         [<a href="<c:url value="/ticket/delete/${entry.id}" />">Delete</a>]
