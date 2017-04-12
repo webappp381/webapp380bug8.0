@@ -60,8 +60,14 @@
             </c:when>
             <c:otherwise>
                 <c:forEach items="${pollTicketDatabase}" var="entry5">
-                    Poll #${entry5.key}: <a href="<c:url value="/poll/view/${entry5.key}" />"> 
+                    Poll #${entry5.key}: 
+                    <security:authorize access="isAuthenticated()"><a href="<c:url value="/poll/view/${entry5.key}" />"> 
                         <c:out value="${entry5.value.pollSubject}" /></a>
+                    </security:authorize>
+                    <security:authorize access="isAnonymous()"><a href="<c:url value="/poll/viewresult/${entry5.key}" />"> 
+                        <c:out value="${entry5.value.pollSubject}" /></a>
+                    </security:authorize>
+
                     <br>
                 </c:forEach>
             </c:otherwise>  
