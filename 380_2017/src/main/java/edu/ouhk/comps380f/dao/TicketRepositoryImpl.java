@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -107,9 +108,13 @@ public class TicketRepositoryImpl implements TicketRepository {
             = "select * from ticket where id = ?";
 
     @Override
-    public Ticket findById(int id) {
-        Ticket ticket = jdbcOp.queryForObject(SQL_SELECT_TICKET, new TicketRowMapper(), id);
-        return ticket;
+    public Ticket findById(int id){
+      try{
+      Ticket ticket = jdbcOp.queryForObject(SQL_SELECT_TICKET, new TicketRowMapper(), id);
+          return ticket;
+      }catch(EmptyResultDataAccessException e) {
+          return null;
+      }
     }
     
     private static final String SQL_EMPTY
