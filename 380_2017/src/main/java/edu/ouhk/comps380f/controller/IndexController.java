@@ -18,9 +18,5 @@ public class IndexController {
         return "login";
     }
     
-    @RequestMapping("create")
-    public String create() {
-        return "create";
-    }
     
 }
