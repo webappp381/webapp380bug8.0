@@ -27,13 +27,15 @@
         Categories: <c:out value="${ticket.categories}"/><br /><br />
         <c:out value="${ticket.body}" /><br /><br />
          <c:if test="${attachmentlist !=null}">
+           <security:authorize access="isAuthenticated()">
             File(s):
             <c:forEach items="${attachmentlist}" var="attachment"
                        varStatus="status">
                 <c:if test="${!status.first}">, </c:if>
                 <a href="<c:url value="/ticket/${ticketId}/attachment/${attachment.name}" />">
                     <c:out value="${attachment.name}" /></a>       
-            </c:forEach><br /><br />
+            </c:forEach>
+                </security:authorize><br /><br />
         </c:if>
             
             <c:choose>
@@ -45,13 +47,15 @@
                 <c:forEach items="${selectedReply}" var="entry">
                       Reply Name <c:out value="${entry.replyName}"/>
                     <br/>
-                    (reply content: <c:out value="${entry.replybody}" />)                   
+                    (reply content: <c:out value="${entry.replybody}" />) 
+                    <security:authorize access="isAuthenticated()">
                     <c:forEach items="${entry.attachments}" var="attachment"
                                varStatus="status">                     
                         <c:if test="${!status.first}">, </c:if>
                         <a href="<c:url value="/reply/${entry.id}/attachment/${attachment.name}" />">
                             <c:out value="${attachment.name}" /></a>       
                         </c:forEach>
+                        </security:authorize>
                     <br /><br />
                     <security:authorize access="hasRole('ADMIN')">            
                         [<a href="<c:url value="/reply/delete/${entry.id}" />">Delete</a>]
