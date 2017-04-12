@@ -5,6 +5,13 @@
         <title>poll Page</title>
     </head>
     <body>
+       <security:authorize access="isAuthenticated()">
+        <c:url var="logoutUrl" value="/logout"/>
+        <form action="${logoutUrl}" method="post">
+            <input type="submit" value="Log out" />
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        </form>
+      </security:authorize>
         <h2>Poll #${pollId}: <c:out value="${poll.pollSubject}" /></h2>
         <select name="item" form="f">
             <c:forEach items="${poll.map}" var="entry">

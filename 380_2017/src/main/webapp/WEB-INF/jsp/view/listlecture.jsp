@@ -4,13 +4,13 @@
         <title>Customer Support</title>
     </head>
     <body>
-      <security:authorize access="isAuthenticated()">
+        <security:authorize access="isAuthenticated()">
         <c:url var="logoutUrl" value="/logout"/>
         <form action="${logoutUrl}" method="post">
             <input type="submit" value="Log out" />
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
-        </security:authorize>  
+        </security:authorize> 
         <h2>All Post</h2>
 
         <security:authorize access="hasRole('ADMIN')">    

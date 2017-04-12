@@ -38,12 +38,16 @@
     <http auto-config="true">
         <intercept-url pattern="/user/**" access="hasRole('ADMIN')" />
         <intercept-url pattern="/ticket/delete/**" access="hasRole('ADMIN')" />
+        <intercept-url pattern="/ticket/edit/**" access="hasRole('ADMIN') or hasRole('USER')" />
+        <intercept-url pattern="/ticket/create/**" access="hasRole('ADMIN') or hasRole('USER')" />
         <intercept-url pattern="/ticket/**" access="permitAll" />
         <intercept-url pattern="/create" access="permitAll" />
+        <intercept-url pattern="/poll/viewresult/**" access="permitAll" />
+        <intercept-url pattern="/poll/**" access="hasRole('ADMIN') or hasRole('USER')" />
 
         <form-login login-page="/login"
                     authentication-failure-url="/login?error" />
-        <logout logout-success-url="/login?logout"
+        <logout logout-success-url="/ticket/list"
                 invalidate-session="true"
                 delete-cookies="JSESSIONID" />
         <remember-me key="custSupportSecret"
