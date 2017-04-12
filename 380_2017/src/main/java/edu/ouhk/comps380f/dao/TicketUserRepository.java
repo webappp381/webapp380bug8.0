@@ -7,5 +7,6 @@ public interface TicketUserRepository {
     public void create(TicketUser user);
     public List<TicketUser> findAll();
     public TicketUser findByUsername(String username);
+    public void editByUsername(String username, String role);
     public void deleteByUsername(String username);
 }

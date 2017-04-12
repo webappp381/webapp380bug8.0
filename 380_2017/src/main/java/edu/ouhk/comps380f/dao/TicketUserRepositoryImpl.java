@@ -88,6 +88,14 @@ public class TicketUserRepositoryImpl implements TicketUserRepository {
         }
         return ticketUser;
     }
+    
+    private static final String SQL_EDIT_ROLES
+            = "update user_roles set role = ? where username = ?";
+
+    @Override
+    public void editByUsername(String username, String role) {
+        jdbcOp.update(SQL_EDIT_ROLES, role, username);
+    }
 
     private static final String SQL_DELETE_USER
             = "delete from users where username = ?";

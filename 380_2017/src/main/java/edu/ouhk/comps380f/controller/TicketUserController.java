@@ -84,6 +84,20 @@ public class TicketUserController {
         logger.info("User " + form.getUsername() + " created.");
         return new RedirectView("/user/list", true);
     }
+    
+    @RequestMapping(value = "edit/{username}", method = RequestMethod.GET)
+    public View editTicket(@PathVariable("username") String username) {
+        ticketUserRepo.editByUsername(username, "ROLE_ADMIN");
+        logger.info("User " + username + " role edit.");
+        return new RedirectView("/user/list", true);
+    }
+    
+    @RequestMapping(value = "edit_user/{username}", method = RequestMethod.GET)
+    public View editUser(@PathVariable("username") String username) {
+        ticketUserRepo.editByUsername(username, "ROLE_USER");
+        logger.info("User " + username + " role edit.");
+        return new RedirectView("/user/list", true);
+    }
 
     @RequestMapping(value = "delete/{username}", method = RequestMethod.GET)
     public View deleteTicket(@PathVariable("username") String username) {

@@ -139,6 +139,7 @@ public class TicketRepositoryImpl implements TicketRepository {
             = "select * from ticket where categories = 'lecture'";
     private static final String SQL_SELECT_OTHER
             = "select * from ticket where categories = 'other'";
+    
     @Override
     public List<Ticket> findByCategories(String type) {
         List<Map<String, Object>> rows=null;
@@ -188,9 +189,6 @@ public class TicketRepositoryImpl implements TicketRepository {
 
     private static final String SQL_DELETE_TICKET
             = "delete  from ticket where id = ?";
-    
-
-    
 
     @Override
     public void deleteById(int id) {
